@@ -1,24 +1,54 @@
 import React from "react";
-import { Text, View } from "react-native";
+import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { Ionicons } from "@expo/vector-icons";
+import { colors } from "../theme";
+import { FavoritesProvider } from "./FavoritesContext";
+import { ProductsTab } from "./ProductsTab";
+import { FavoritesTab } from "./FavoritesTab";
+import { ProductDetailsScreen } from "./ProductDetailsScreen";
 import type { RootStackParamList, TabParamList } from "./types";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator<TabParamList>();
 
-// TODO 1: function HomeTabs() — Tab.Navigator (headerShown:false) với 2 Tab.Screen:
-//   "Products" (ProductsTab) và "Favorites" (FavoritesTab), mỗi tab có icon Ionicons.
-
-// TODO 2: <FavoritesProvider><NavigationContainer><Stack.Navigator>
-//   Stack.Screen "Home" (component HomeTabs, title "Cửa hàng")
-//   Stack.Screen "ProductDetails" (component ProductDetailsScreen, title "Chi tiết sản phẩm")
-export function StackTabApp() {
+// TODO 1: Tab Navigator nằm bên trong màn "Home" của Stack
+function HomeTabs() {
   return (
-    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-      <Text>Bài 4 – chưa làm</Text>
-    </View>
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        headerShown: false, // Stack đã có header "Cửa hàng" rồi
+        tabBarActiveTintColor: colors.red,
+        tabBarIcon: ({ focused, color, size }) => {
+          const name =
+            route.name === "Products"
+              ? focused ? "grid" : "grid-outline"
+              : focused ? "heart" : "heart-outline";
+          return <Ionicons name={name} size={size} color={color} />;
+        },
+      })}
+    >
+      <Tab.Screen name="Products" component={ProductsTab} options={{ title: "Sản phẩm" }} />
+      <Tab.Screen name="Favorites" component={FavoritesTab} options={{ title: "Yêu thích" }} />
+    </Tab.Navigator>
   );
 }
 
-void Stack; void Tab;
+// TODO 2: Stack chính gồm Home (là Tab) và ProductDetails
+export function StackTabApp() {
+  return (
+    <FavoritesProvider>
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen name="Home" component={HomeTabs} options={{ title: "Cửa hàng" }} />
+          <Stack.Screen
+            name="ProductDetails"
+            component={ProductDetailsScreen}
+            options={{ title: "Chi tiết sản phẩm" }}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </FavoritesProvider>
+  );
+}

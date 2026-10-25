@@ -1,10 +1,22 @@
 import React from "react";
-import { Text, View } from "react-native";
+import { FlatList } from "react-native";
+import { PHONES } from "../data/phones";
+import { ProductRow } from "./ProductRow";
 import type { TabProps } from "./types";
 
 export function ProductsTab({ navigation }: TabProps<"Products">) {
-  // TODO 3: FlatList data={PHONES}; mỗi dòng là <ProductRow phone={item} onPress={...} />
-  //   onPress: navigation.navigate("ProductDetails", { id: item.id })
-  void navigation;
-  return <View><Text>Products – chưa làm</Text></View>;
+  // TODO 3: danh sách sản phẩm, bấm vào thì mở chi tiết và truyền id
+  return (
+    <FlatList
+      data={PHONES}
+      keyExtractor={(p) => p.id}
+      contentContainerStyle={{ padding: 16, gap: 10 }}
+      renderItem={({ item }) => (
+        <ProductRow
+          phone={item}
+          onPress={() => navigation.navigate("ProductDetails", { id: item.id })}
+        />
+      )}
+    />
+  );
 }

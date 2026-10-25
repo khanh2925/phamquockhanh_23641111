@@ -1,11 +1,40 @@
 import React from "react";
-import { Text, View } from "react-native";
+import { FlatList, StyleSheet, Text, View } from "react-native";
+import { PHONES } from "../data/phones";
+import { colors } from "../theme";
+import { useFavorites } from "./FavoritesContext";
+import { ProductRow } from "./ProductRow";
 import type { TabProps } from "./types";
 
 export function FavoritesTab({ navigation }: TabProps<"Favorites">) {
-  // TODO 8: lấy ids từ useFavorites(); lọc PHONES theo ids;
-  //   danh sách rỗng → "Chưa có sản phẩm nào được lưu."
-  //   bấm một dòng cũng mở ProductDetails như Tab1.
-  void navigation;
-  return <View><Text>Favorites – chưa làm</Text></View>;
+  // TODO 8: lọc các sản phẩm đã lưu
+  const { ids } = useFavorites();
+  const saved = PHONES.filter((p) => ids.includes(p.id));
+
+  if (saved.length === 0) {
+    return (
+      <View style={s.center}>
+        <Text style={s.empty}>Chưa có sản phẩm nào được lưu.</Text>
+      </View>
+    );
+  }
+
+  return (
+    <FlatList
+      data={saved}
+      keyExtractor={(p) => p.id}
+      contentContainerStyle={{ padding: 16, gap: 10 }}
+      renderItem={({ item }) => (
+        <ProductRow
+          phone={item}
+          onPress={() => navigation.navigate("ProductDetails", { id: item.id })}
+        />
+      )}
+    />
+  );
 }
+
+const s = StyleSheet.create({
+  center: { flex: 1, alignItems: "center", justifyContent: "center" },
+  empty: { color: colors.muted },
+});
