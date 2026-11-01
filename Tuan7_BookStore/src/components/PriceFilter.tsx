@@ -1,0 +1,37 @@
+import React from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { PRICE_RANGES, PriceRange } from "../utils/filters";
+import { colors, radius } from "../theme";
+
+interface Props {
+  value: PriceRange;
+  onChange: (v: PriceRange) => void;
+}
+
+// THỬ THÁCH BT7.C2: 3 nút lọc khoảng giá (bấm lần nữa để bỏ chọn)
+export function PriceFilter({ value, onChange }: Props) {
+  return (
+    <View style={styles.row}>
+      {PRICE_RANGES.map((r) => {
+        const active = value === r.key;
+        return (
+          <Pressable
+            key={r.key}
+            onPress={() => onChange(active ? null : r.key)}
+            style={[styles.btn, active && styles.btnActive]}
+          >
+            <Text style={[styles.text, active && styles.textActive]}>{r.label}</Text>
+          </Pressable>
+        );
+      })}
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  row: { flexDirection: "row", gap: 8, paddingHorizontal: 12, paddingBottom: 6 },
+  btn: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: radius.pill, borderWidth: 1, borderColor: colors.cyan, backgroundColor: "#fff" },
+  btnActive: { backgroundColor: colors.cyan },
+  text: { color: colors.navy, fontWeight: "600", fontSize: 12 },
+  textActive: { color: "#fff" },
+});
